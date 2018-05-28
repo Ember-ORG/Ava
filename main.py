@@ -15,8 +15,13 @@ import sys
 import re
 from six.moves import queue
 import hashlib
+import asearch
 """Synthesizes speech from the input string of text."""
 from google.cloud import texttospeech
+
+avaCasual = False
+nlpEnabled = True
+
 # [END import_libraries]
 
 # Audio recording parameters
@@ -138,7 +143,13 @@ def listen_print_loop(responses):
                 index = transcript.lower().find(names)
                 if index != -1:
                     print(transcript.lower()[index+4:])
-                    process(transcript.lower()[index+4:])
+                    if nlpEnabled:
+                        process(transcript.lower()[index+4:])
+                    else:
+                        say(asearch.ddg(transcript.lower()[index+4:]))
+                elif avaCasual:
+                    print("Casual: " + transcript.lower())
+                    process(transcript.lower())
 
                 # Exit recognition if any of the transcribed phrases could be
                 # one of our keywords.
@@ -177,8 +188,9 @@ def main():
             try:
                 # Now, put the transcription responses to use.
                 listen_print_loop(responses)
-            except:
+            except Exception as e:
                 print "Restarting"
+                print e
                 main()
 
 
