@@ -15,6 +15,13 @@ import sys
 import re
 from six.moves import queue
 import hashlib
+import asearch
+"""Synthesizes speech from the input string of text."""
+from google.cloud import texttospeech
+
+avaCasual = False
+DDGEnabled = False
+
 # [END import_libraries]
 
 # Audio recording parameters
@@ -136,7 +143,13 @@ def listen_print_loop(responses):
                 index = transcript.lower().find(names)
                 if index != -1:
                     print(transcript.lower()[index+4:])
-                    process(transcript.lower()[index+4:])
+                    if DDGEnabled:
+                        process(transcript.lower()[index+4:])
+                    else:
+                        say(asearch.ddg(transcript.lower()[index+4:]))
+                elif avaCasual:
+                    print("Casual: " + transcript.lower())
+                    process(transcript.lower())
 
                 # Exit recognition if any of the transcribed phrases could be
                 # one of our keywords.
@@ -176,8 +189,8 @@ def main():
                 # Now, put the transcription responses to use.
                 listen_print_loop(responses)
             except Exception as e:
-                print e
                 print "Restarting"
+                print e
                 main()
 
 
@@ -188,15 +201,28 @@ ava = ['eva', 'ava', 'evil', 'ada']
 
 
 def say(words):
+    client = texttospeech.TextToSpeechClient()
+
+    input_text = texttospeech.types.SynthesisInput(text=words)
+
+    voice = texttospeech.types.VoiceSelectionParams(
+        language_code='en-US',
+        ssml_gender=texttospeech.enums.SsmlVoiceGender.FEMALE)
+
+    audio_config = texttospeech.types.AudioConfig(
+        audio_encoding=texttospeech.enums.AudioEncoding.MP3)
+
+    response = client.synthesize_speech(input_text, voice, audio_config)
+
     print "Ava: " + words
     hash = hashlib.md5(''.join(e for e in words if e.isalnum())[
                        0:254].lower()).hexdigest()
     speech_filename = './tts/' + hash + '.mp3'.lower()
+    # The response's audio_content is binary.
+    if not os.path.isfile(speech_filename):
+        with open(speech_filename, 'wb') as out:
+            out.write(response.audio_content)
     if os.path.isfile(speech_filename):
-        playsound(speech_filename)
-    else:
-        text = gTTS(text=unicode(words.decode('utf-8')), lang='en')
-        text.save(speech_filename)
         playsound(speech_filename)
 
 
