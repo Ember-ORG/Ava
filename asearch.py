@@ -19,6 +19,4 @@ def wiki(term):
 def ddg(term):
     print("ddg" + term)
     result = duckduckgo.Search(term)
-    if result == term:
-        return 'null_result'
     return result
