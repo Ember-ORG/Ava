@@ -6,16 +6,10 @@ import atime
 import asearch
 import glob
 
-
 # Defining variables
 num_says = []
-multsent = False
-usrsentences = []
 response = ''
-numsents = 0
-sentcount = 0
 usrinput = ''
-understand = False
 
 # Word dictionary
 question = ['what', 'where', 'why', 'how', 'when', 'do', 'does']
@@ -49,11 +43,9 @@ understand = ['think', 'know', 'wonder']
 def respond(usrinput):
     # Re-set all variables
     def reset():
-        global usrsentences
         global filtered_sentence
         global response
 
-        usrsentences = []
         filtered_sentence = []
         response = ''
 
@@ -142,59 +134,31 @@ def respond(usrinput):
     # Main function for obtaining user input
     def main(usrinput):
         # Obtaining global variables
-        global usrsentences
         global response
         global filtered_sentence
 
         # Re-setting variables
         reset()
+        
+        # Setup usrinput
+        usrinput = usrinput.replace("'s", ' is')
 
-        # Initializing stopwords to use English
-        stop_words = set(stopwords.words('english'))
-
-        # Getting number of sentences inputted
-        sentences = sent_tokenize(usrinput)
-        numsents = len(sentences)
-
-        # Only getting basic meaning if user is not talking to Ava
-        if not any(you in usrinput for you in you):
-            # If the input is more than one sentence
-            if numsents > 1:
-                # Filter each individual sentence and get response
-                for i in xrange(numsents):
-                    # Filtering sentence i
-                    words = word_tokenize(sentences[i])
-                    for w in words:
-                        if w not in stop_words:
-                            filtered_sentence.append(w)
-
-                    # Adding filtered sentence to response list if it is not already there
-                    if len(usrsentences) > 0:
-                        if getResponse(filtered_sentence) != unicode(usrsentences[len(usrsentences) - 1]):
-                            usrsentences.append(getResponse(filtered_sentence))
-                    else:
-                        usrsentences.append(getResponse(filtered_sentence))
-
-                    # Iterating through i
-                    i += 1
-
-                # Getting final response
-                response = unicode(' '.join(usrsentences)).strip()
-
-            # If input is just one sentence
-            else:
-                words = word_tokenize(usrinput)
-                for w in words:
-                    if w not in stop_words:
-                        filtered_sentence.append(w)
-
-                # Get response for filtered sentence
-                response = getResponse(filtered_sentence)
-
-        # Making sure it didn't filter out everything
-        elif response == '':
+        if any(you in usrinput for you in you):
             response = getResponse(usrinput)
         else:
+            # Initializing stopwords to use English
+            stop_words = set(stopwords.words('english'))
+
+            words = word_tokenize(usrinput)
+            for w in words:
+                if w not in stop_words:
+                    filtered_sentence.append(w)
+
+            # Get response for filtered sentence
+            response = getResponse(filtered_sentence)
+
+        # Making sure it didn't filter out everything
+        if response == '':
             response = getResponse(usrinput)
 
         # Returning response
