@@ -27,7 +27,7 @@ favorite = ['favorite']
 color = ['color']
 mean = ['stupid', 'dumb', 'idiot', 'suck', "unintelligent",
         'ignorant', 'brainless', 'idiotic', 'mindless', 'dumbass', 'retard']
-nice = ['smart', 'intelligent', "clever", "cool", "good", 'nice']
+nice = ['smart', 'intelligent', "clever", "cool", "good", 'nice', 'effecient']
 basic = ['ok', 'good', 'sounds fine',
          'alright', 'fine', 'yes', 'no', 'yeah']
 food = ['food', 'foods']
@@ -40,7 +40,8 @@ month = ['month']
 date = ['date']
 year = ['year']
 day = ['day', 'today']
-creators = ['creators', 'created', 'made', 'are', 'who']
+creators = ['creators', 'created', 'made']
+direct = ['are', 'who', 'what']
 clear = ['clear']
 understand = ['think', 'know', 'wonder']
 
@@ -106,7 +107,7 @@ def respond(usrinput):
                     response = "My name is Ava"
                 elif any(feel in filtered_sentence for feel in feel):
                     response = 'I am feeling well.'
-                elif any(creators in filtered_sentence for creators in creators):
+                elif any(creators in filtered_sentence for creators in creators) and any(direct in filtered_sentence for direct in direct):
                     response = "I am an open source assistant made by Ian Draves, Oscar Rhoades, and Davis Dova loce Dell osh."
                 elif any(thanks in filtered_sentence for thanks in thanks):
                     response = "Yo're welcome!"
