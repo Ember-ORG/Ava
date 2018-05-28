@@ -14,6 +14,7 @@ import pyaudio
 import sys
 import re
 from six.moves import queue
+import hashlib
 # [END import_libraries]
 
 # Audio recording parameters
@@ -170,16 +171,12 @@ def main():
                     for content in audio_generator)
 
         responses = client.streaming_recognize(streaming_config, requests)
-        '''
         while 1:
             try:
                 # Now, put the transcription responses to use.
-                main()
+                listen_print_loop(responses)
             except:
                 print "Restarting"
-                '''
-        listen_print_loop(responses)
-        main()
 
 
 # Defining variables
@@ -190,12 +187,13 @@ ava = ['eva', 'ava', 'evil', 'ada']
 
 def say(words):
     print "Ava: " + words
-    speech_filename = unicode(
-        './tts/' + unicode(''.join(e for e in words if e.isalnum()))[0:254] + '.mp3').lower()
+    hash = hashlib.md5(''.join(e for e in words if e.isalnum())[
+                       0:254].lower()).hexdigest()
+    speech_filename = './tts/' + hash + '.mp3'.lower()
     if os.path.isfile(speech_filename):
         playsound(speech_filename)
     else:
-        text = gTTS(text=words, lang='en')
+        text = gTTS(text=unicode(words.decode('utf-8')), lang='en')
         text.save(speech_filename)
         playsound(speech_filename)
 
@@ -226,6 +224,6 @@ def process(command):
 
 
 # Open simple ui
-#bwebbrowser.open('file://' + os.path.realpath('gui/gui.html'))
+# bwebbrowser.open('file://' + os.path.realpath('gui/gui.html'))
 
 main()
