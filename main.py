@@ -20,7 +20,7 @@ import asearch
 from google.cloud import texttospeech
 
 avaCasual = False
-nlpEnabled = True
+nonDDG = True
 
 # [END import_libraries]
 
@@ -143,7 +143,7 @@ def listen_print_loop(responses):
                 index = transcript.lower().find(names)
                 if index != -1:
                     print(transcript.lower()[index+4:])
-                    if nlpEnabled:
+                    if nonDDG:
                         process(transcript.lower()[index+4:])
                     else:
                         say(asearch.ddg(transcript.lower()[index+4:]))
