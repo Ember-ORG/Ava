@@ -1,0 +1,89 @@
+# Kaitlyn auto-smart
+import speech_recognition as sr
+from gtts import gTTS
+from playsound import playsound
+import webbrowser
+import os
+import kaitlynnlp
+
+# Defining variables
+kaitlyn = ['kaitlyn', 'caitlin', 'gatewood']
+
+# Text to speech
+
+
+def say(words):
+    print("Kaitlyn: " + str(words))
+    speech_filename = str(
+        './tts/' + str(''.join(e for e in words if e.isalnum()))[0:254] + '.mp3').lower()
+    if os.path.isfile(speech_filename):
+        playsound(speech_filename)
+    else:
+        text = gTTS(text=words, lang='en')
+        text.save(speech_filename)
+        playsound(speech_filename)
+
+# Speech Recognition
+
+
+def usrCommand():
+    # Obtaining global variables
+    global usrinput
+
+    # Initializing speech recognition
+    r = sr.Recognizer()
+
+    # Setup microphone for listening
+    with sr.Microphone(sample_rate=15000, chunk_size=256) as source:
+        r.adjust_for_ambient_noise(source)
+        audio = r.listen(source)
+
+        try:
+            usrinput = r.recognize_google(audio).lower()
+
+        except sr.UnknownValueError:
+            usrinput = usrCommand()
+
+        return usrinput
+
+# See if user is talking to Kaitlyn
+
+
+def process(command):
+    # Obtaining global variables
+    global usrinput
+
+    # Setting user input
+    usrinput = command
+
+    print(usrinput)
+
+    # Getting response if talked to
+    if any(kaitlyn in usrinput for kaitlyn in kaitlyn):
+        # Playing activated sound
+        if 'exit' in usrinput:
+            playsound("./audio/exit.mp3")
+            exit()
+        else:
+            playsound("./audio/activation.mp3")
+
+        # Modifying user input
+        usrinput = str(usrinput.split(' ', 1)[1]).strip()
+
+        # Displaying user input
+        print("You: " + usrinput)
+
+        # Removing kaitlyn prefix from usrinput
+        #usrinput = usrinput.replace('luquillo', '').strip()
+
+        # Getting response from user input
+        if usrinput != '':
+            say(kaitlynnlp.respond(usrinput))
+
+# Open simple ui
+#webbrowser.open('file://' + os.path.realpath('gui/gui.html'))
+
+
+# Constant listening
+while True:
+    process(usrCommand())
