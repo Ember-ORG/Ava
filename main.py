@@ -1,8 +1,6 @@
 # Ava auto-smart
 from __future__ import with_statement
 from __future__ import absolute_import
-import speech_recognition as sr
-from gtts import gTTS
 from playsound import playsound
 import webbrowser
 import os
@@ -16,11 +14,12 @@ import re
 from six.moves import queue
 import hashlib
 import asearch
-"""Synthesizes speech from the input string of text."""
 from google.cloud import texttospeech
 
+# Defining variables
+ava = ['eva', 'ava', 'evil', 'ada']
 avaCasual = False
-DDGEnabled = False
+DDGEnabled = True
 
 # [END import_libraries]
 
@@ -193,13 +192,7 @@ def main():
                 print e
                 main()
 
-
-# Defining variables
-ava = ['eva', 'ava', 'evil', 'ada']
-
 # Text to speech
-
-
 def say(words):
     client = texttospeech.TextToSpeechClient()
 
@@ -215,8 +208,7 @@ def say(words):
     response = client.synthesize_speech(input_text, voice, audio_config)
 
     print "Ava: " + words
-    hash = hashlib.md5(''.join(e for e in words if e.isalnum())[
-                       0:254].lower()).hexdigest()
+    hash = hashlib.md5(''.join(e for e in words if e.isalnum()).lower()).hexdigest()
     speech_filename = './tts/' + hash + '.mp3'.lower()
     # The response's audio_content is binary.
     if not os.path.isfile(speech_filename):
