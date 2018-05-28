@@ -177,6 +177,7 @@ def main():
                 listen_print_loop(responses)
             except:
                 print "Restarting"
+                main()
 
 
 # Defining variables
