@@ -1,4 +1,2 @@
-# Lukio
-An open-source virtual assistant
-# Ava
-# Ava
+# Ava AI
+Free and open source assistant technology
