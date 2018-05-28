@@ -175,7 +175,8 @@ def main():
             try:
                 # Now, put the transcription responses to use.
                 listen_print_loop(responses)
-            except:
+            except Exception as e:
+                print e
                 print "Restarting"
                 main()
 
